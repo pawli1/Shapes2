@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -19,7 +20,7 @@ export interface Ball {
 export interface SimulationConfig {
   id: number;
   name: string;
-  shapeType: 'triangle' | 'square' | 'pentagon' | 'hexagon' | 'octagon' | 'star';
+  shapeType: 'triangle' | 'square' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'house' | 'skull' | 'candy_cane' | 'tree' | 'ghost' | 'pumpkin';
   vertexCount: number;
   gravity: number; // Multiplier relative to base
   friction: number; // 0 to 1

@@ -6,7 +6,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { SimulationConfig, GlobalSettings, Ball, Vector2 } from '../types';
-import { generatePolygon, generateStar, add, mult, dot, sub, normalize, mag } from '../utils/math';
+import { generateShape, add, mult, dot, sub, normalize, mag, distPointToSegment } from '../utils/math';
 
 interface CanvasProps {
   config: SimulationConfig;
@@ -60,47 +60,51 @@ const Canvas: React.FC<CanvasProps> = ({ config, globalSettings }) => {
     const shapeRadius = Math.min(width, height) * 0.45;
     state.rotation += (config.rotationSpeed || 0.005) * rotationMultiplier * timeScale;
 
-    let localVertices: Vector2[] = [];
-    if (config.shapeType === 'star') {
-         localVertices = generateStar(config.vertexCount || 5, shapeRadius, shapeRadius * 0.4, {x:0,y:0}, state.rotation);
-    } else {
-         localVertices = generatePolygon(config.vertexCount || 4, shapeRadius, {x:0,y:0}, state.rotation);
-    }
+    // Use the generic generateShape function which handles all shape types
+    const localVertices = generateShape(config.shapeType, config.vertexCount, shapeRadius, {x:0,y:0}, state.rotation);
 
     state.balls.forEach(ball => {
+        // Gravity and Friction
         ball.vel.y += config.gravity * gravityMultiplier * timeScale;
         ball.vel = mult(ball.vel, 1 - (config.friction || 0.001) * timeScale);
         ball.pos = add(ball.pos, mult(ball.vel, timeScale));
 
         const restitution = config.restitution * bouncinessMultiplier;
         
+        // Wall Collision (Segment-based for concave support)
         for (let i = 0; i < localVertices.length; i++) {
             const p1 = localVertices[i];
             const p2 = localVertices[(i + 1) % localVertices.length];
-            const edge = sub(p2, p1);
-            const edgeNormal = normalize({ x: -edge.y, y: edge.x }); 
-            if (dot(edgeNormal, mult(p1, -1)) < 0) {
-                edgeNormal.x *= -1;
-                edgeNormal.y *= -1;
-            }
 
-            const relPos = sub(ball.pos, p1);
-            const dist = dot(relPos, edgeNormal);
+            // Use segment distance check instead of infinite plane
+            // This properly handles concave shapes (skulls, candy canes, stars)
+            const { dist, normal } = distPointToSegment(ball.pos, p1, p2);
             
+            // Check collision with the wall segment
             if (dist < ball.radius) {
+                // Determine penetration depth
                 const penetration = ball.radius - dist;
-                ball.pos = add(ball.pos, mult(edgeNormal, penetration));
-                const velDotNormal = dot(ball.vel, edgeNormal);
+                
+                // Push ball out of wall along the normal
+                ball.pos = add(ball.pos, mult(normal, penetration));
+
+                // Reflect velocity
+                const velDotNormal = dot(ball.vel, normal);
+                
+                // Only reflect if moving towards the wall
                 if (velDotNormal < 0) {
-                    const reflect = mult(edgeNormal, 2 * velDotNormal);
+                    const reflect = mult(normal, 2 * velDotNormal);
                     ball.vel = sub(ball.vel, mult(reflect, 1));
                     ball.vel = mult(ball.vel, restitution);
-                    ball.vel = add(ball.vel, mult(edgeNormal, 0.1));
+                    
+                    // Nudge slightly to prevent sticking
+                    ball.vel = add(ball.vel, mult(normal, 0.1));
                 }
             }
         }
     });
 
+    // Ball-to-Ball Collision
     const balls = state.balls;
     for (let i = 0; i < balls.length; i++) {
         for (let j = i + 1; j < balls.length; j++) {
@@ -136,8 +140,9 @@ const Canvas: React.FC<CanvasProps> = ({ config, globalSettings }) => {
         }
     }
 
+    // Safety bounds reset
     balls.forEach(ball => {
-      if (mag(ball.pos) > shapeRadius + 100) {
+      if (mag(ball.pos) > shapeRadius + 200) {
            ball.pos = {x: 0, y: 0};
            ball.vel = {x: 0, y: 0};
       }
@@ -150,12 +155,7 @@ const Canvas: React.FC<CanvasProps> = ({ config, globalSettings }) => {
     const state = stateRef.current;
     const shapeRadius = Math.min(width, height) * 0.45;
 
-    let points: Vector2[] = [];
-    if (config.shapeType === 'star') {
-         points = generateStar(config.vertexCount || 5, shapeRadius, shapeRadius * 0.4, center, state.rotation);
-    } else {
-         points = generatePolygon(config.vertexCount || 4, shapeRadius, center, state.rotation);
-    }
+    const points = generateShape(config.shapeType, config.vertexCount, shapeRadius, center, state.rotation);
 
     ctx.beginPath();
     if (points.length > 0) {

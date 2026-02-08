@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -25,6 +26,28 @@ export const presets: SimulationConfig[] = [
     shapeType: 'square',
     nuanceDescription: "Classic physics. Moderate gravity and bounce.",
     rotationSpeed: 0.005,
+  },
+  {
+    ...baseConfig,
+    id: 99,
+    name: "Haunted House",
+    shapeType: 'house',
+    vertexCount: 5,
+    gravity: 0.1,
+    ballCount: 12,
+    restitution: 0.7,
+    nuanceDescription: "A spooky container with a roof.",
+  },
+  {
+    ...baseConfig,
+    id: 100,
+    name: "Skull Crusher",
+    shapeType: 'skull',
+    vertexCount: 0,
+    gravity: 0.3,
+    ballCount: 5,
+    ballSize: 12,
+    nuanceDescription: "Balls rattling inside a cranial cavity.",
   },
   {
     ...baseConfig,
@@ -145,10 +168,7 @@ export const presets: SimulationConfig[] = [
     id: 16,
     name: "Horizontal Gravity",
     shapeType: 'square',
-    gravity: 0, // Handled by custom logic in hook if needed, but for now we simulate via rotation or vector hacking. 
-                // *Correction*: For simplicity in the shared hook, we might stick to Y gravity, 
-                // but let's simulate 'wind' by just setting gravity very low and initial speed high.
-                // Actually, let's just use normal gravity but high bounce.
+    gravity: 0,
     restitution: 0.95,
     ballCount: 4,
     nuanceDescription: "Near perpetual motion machine.",

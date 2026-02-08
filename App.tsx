@@ -52,12 +52,13 @@ const App: React.FC = () => {
         model: "gemini-3-pro-preview",
         contents: `Create a unique and interesting physics simulation configuration based on this prompt: "${prompt}". 
                    Return only a valid JSON object matching the SimulationConfig interface.
-                   shapeType must be one of: 'triangle', 'square', 'pentagon', 'hexagon', 'octagon', 'star'.
+                   shapeType must be one of: 'triangle', 'square', 'pentagon', 'hexagon', 'octagon', 'star', 'house', 'skull', 'candy_cane', 'tree', 'ghost', 'pumpkin'.
                    gravity should be between -1 and 1.
                    ballCount should be between 1 and 60.
                    ballSize between 2 and 30.
                    rotationSpeed between -0.1 and 0.1.
-                   restitution between 0.1 and 1.2.`,
+                   restitution between 0.1 and 1.2.
+                   For 'skull', 'ghost', or 'pumpkin', try to use thematic gravity or colors if possible in description.`,
         config: {
           responseMimeType: "application/json",
           responseSchema: {
