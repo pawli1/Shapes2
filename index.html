@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kinetic Shapes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --github-bg: #0d1117;
+        --github-card: #161b22;
+        --github-border: #30363d;
+        --github-blue: #58a6ff;
+        --github-text: #c9d1d9;
+      }
+      body {
+        background-color: var(--github-bg);
+        color: var(--github-text);
+      }
+      /* Custom scrollbar for better dark mode feel */
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--github-bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #30363d;
+        border-radius: 6px;
+        border: 3px solid var(--github-bg);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #484f58;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.40.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
